@@ -1,0 +1,29 @@
+m4_define([xfmixer_version_major], [0])
+m4_define([xfmixer_version_minor], [1])
+m4_define([xfmixer_version_build], [0])
+m4_define([xfmixer_version], [xfmixer_version_major().xfmixer_version_minor().xfmixer_version_build()])
+
+AC_INIT([xfmixer], [xfmixer_version], [http://codingprime.com/], [xfmixer])
+AC_PREREQ([2.5.0])
+
+AM_INIT_AUTOMAKE([AC_PACKAGE_TARNAME()], [AC_PACKAGE_VERSION()])
+AM_CONFIG_HEADER([config.h])
+AM_MAINTAINER_MODE()
+
+AC_PROG_CC()
+AC_PROG_LD()
+AC_PROG_INSTALL()
+AC_PROG_LIBTOOL()
+
+dnl *****************************
+dnl *** XFCE stuff
+dnl *****************************
+XDT_CHECK_PACKAGE([GTK], [gtk+-2.0], [2.12.0])
+XDT_CHECK_PACKAGE([LIBXFCE4UTIL], [libxfce4util-1.0], [4.8.0])
+XDT_CHECK_PACKAGE([LIBXFCEGUI4], [libxfcegui4-1.0], [4.8.0])
+XDT_CHECK_PACKAGE([ALSA], [alsa], [1.0.23])
+
+AC_OUTPUT([
+		   Makefile
+		   xfmixer/Makefile
+])
