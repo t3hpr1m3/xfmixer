@@ -17,3 +17,5 @@ coverage/*
 vendor/plugins/ns_web
 *.gem
 .yardoc
+*.o
+*.Po

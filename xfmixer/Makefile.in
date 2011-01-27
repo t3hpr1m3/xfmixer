@@ -47,7 +47,7 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_xfmixer_OBJECTS = xfmixer-main.$(OBJEXT)
+am_xfmixer_OBJECTS = xfmixer-main.$(OBJEXT) xfmixer-alsa.$(OBJEXT)
 xfmixer_OBJECTS = $(am_xfmixer_OBJECTS)
 xfmixer_LDADD = $(LDADD)
 xfmixer_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
@@ -199,7 +199,9 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-xfmixer_SOURCES = main.c
+xfmixer_SOURCES = main.c \
+				  alsa.c
+
 xfmixer_CFLAGS = $(DBUS_CFLAGS) $(LIBXFCEGUI4_CFLAGS) $(ALSA_CFLAGS)
 xfmixer_LDFLAGS = $(DBUS_LIBS) $(LIBXFCEGUI4_LIBS) $(ALSA_LIBS)
 all: all-am
@@ -289,6 +291,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xfmixer-alsa.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xfmixer-main.Po@am__quote@
 
 .c.o:
@@ -325,6 +328,20 @@ xfmixer-main.obj: main.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='main.c' object='xfmixer-main.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(xfmixer_CFLAGS) $(CFLAGS) -c -o xfmixer-main.obj `if test -f 'main.c'; then $(CYGPATH_W) 'main.c'; else $(CYGPATH_W) '$(srcdir)/main.c'; fi`
+
+xfmixer-alsa.o: alsa.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(xfmixer_CFLAGS) $(CFLAGS) -MT xfmixer-alsa.o -MD -MP -MF $(DEPDIR)/xfmixer-alsa.Tpo -c -o xfmixer-alsa.o `test -f 'alsa.c' || echo '$(srcdir)/'`alsa.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/xfmixer-alsa.Tpo $(DEPDIR)/xfmixer-alsa.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='alsa.c' object='xfmixer-alsa.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(xfmixer_CFLAGS) $(CFLAGS) -c -o xfmixer-alsa.o `test -f 'alsa.c' || echo '$(srcdir)/'`alsa.c
+
+xfmixer-alsa.obj: alsa.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(xfmixer_CFLAGS) $(CFLAGS) -MT xfmixer-alsa.obj -MD -MP -MF $(DEPDIR)/xfmixer-alsa.Tpo -c -o xfmixer-alsa.obj `if test -f 'alsa.c'; then $(CYGPATH_W) 'alsa.c'; else $(CYGPATH_W) '$(srcdir)/alsa.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/xfmixer-alsa.Tpo $(DEPDIR)/xfmixer-alsa.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='alsa.c' object='xfmixer-alsa.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(xfmixer_CFLAGS) $(CFLAGS) -c -o xfmixer-alsa.obj `if test -f 'alsa.c'; then $(CYGPATH_W) 'alsa.c'; else $(CYGPATH_W) '$(srcdir)/alsa.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

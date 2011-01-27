@@ -8,43 +8,27 @@
 #include <dbus/dbus.h>
 #endif
 
-#include <alsa/asoundlib.h>
-#include <alsa/control.h>
+#include "alsa.h"
 
 int main(int argc, char **argv) {
 	GtkWidget	*window;
 	GError		*error = NULL;
+	int i, j;
 
-	//g_set_application_name(_("XfMixer"));
-	//gtk_init(&argc, &argv);
+	if (alsa_init() == -1) {
+		alsa_cleanup();
+		return 1;		
+	}
 
-	/*
-	if (G_UNLIKELY(!xfconf_init(&error))) {
-		if (G_LIKELY(error != NULL)) {
-			g_print(_("Failed to initialize xfconf: %s"), error->message);
-			g_error_free(error);
+	for (i = 0; i < alsa_device_count; i++) {
+		printf("card: %d - %s\n", alsa_device_list[i]->card_num, snd_ctl_card_info_get_id(alsa_device_list[i]->info));
+
+		for (j = 0; j < alsa_device_list[i]->mixer_count; j++) {
+			printf("mixer(%d): %s\n", alsa_device_list[i]->card_num, snd_mixer_selem_id_get_name(alsa_device_list[i]->mixers[j]->sid));
 		}
 	}
 
-	gtk_window_set_default_icon_name("multimedia-volume-control");
-	*/
 
-	void **hints, **n;
-	char *name;
-	const char *filter;
-	if (snd_device_name_hint(-1, "pcm", &hints) >= 0) {
-		n = hints;
-		filter = "Output";
-		while (*n != NULL) {
-			name = snd_device_name_get_hint(*n, "NAME");
-			if (name != NULL) {
-				printf("%s\n", name);
-				free(name);
-			}
-			n++;
-		}
-		snd_device_name_free_hint(hints);
-	}
-	printf("Hello World!\n");
+	alsa_cleanup();
 	return 0;
 }
