@@ -31,6 +31,42 @@ void alsa_cleanup() {
 	snd_config_update_free_global();
 }
 
+int alsa_get_card_count() {
+	return alsa_device_count;
+}
+
+int alsa_get_mixer_count(int card_idx) {
+	if (card_idx < 0 || card_idx >= alsa_device_count)
+		return -1;
+	return alsa_device_list[card_idx]->mixer_count;
+}
+
+const char* alsa_get_card_name(int card_idx) {
+	if (card_idx < 0 || card_idx >= alsa_device_count)
+		return NULL;
+
+	if (alsa_device_list[card_idx]->info == NULL)
+		return NULL;
+
+	return snd_ctl_card_info_get_id(alsa_device_list[card_idx]->info);
+}
+
+const char* alsa_get_mixer_name(int card_idx, int mixer_idx) {
+	if (card_idx < 0 || card_idx >= alsa_device_count)
+		return NULL;
+
+	if (alsa_device_list[card_idx]->mixers == NULL)
+		return NULL;
+
+	if (mixer_idx < 0 || mixer_idx >= alsa_device_list[card_idx]->mixer_count)
+		return NULL;
+
+	if (alsa_device_list[card_idx]->mixers[mixer_idx]->sid == NULL)
+		return NULL;
+
+	return snd_mixer_selem_id_get_name(alsa_device_list[card_idx]->mixers[mixer_idx]->sid);
+}
+
 int alsa_load_devices() {
 	int err, dev;
 	char name[32];
@@ -46,17 +82,17 @@ int alsa_load_devices() {
 		alsa_alloc_device_info(&device_info);
 		device_info->card_num = card;
 		sprintf(name, "hw:%d", card);
-		if ((err = snd_ctl_open(&(device_info->handle), name, 0)) < 0) {
+		if ((err = snd_ctl_open(&device_info->ctl, name, 0)) < 0) {
 			alsa_free_device_info(device_info);
 			printf("control open (%d): %s\n", card, snd_strerror(err));
 			return -1;
 		}
-		if ((err = snd_hctl_open_ctl(&(device_info->hctl), device_info->handle)) < 0) {
+		if ((err = snd_hctl_open_ctl(&device_info->hctl, device_info->ctl)) < 0) {
 			alsa_free_device_info(device_info);
 			printf("hcontrol open (%d): %s\n", card, snd_strerror(err));
 			return -1;
 		}
-		if ((err = snd_ctl_card_info(device_info->handle, device_info->info)) < 0) {
+		if ((err = snd_ctl_card_info(device_info->ctl, device_info->info)) < 0) {
 			alsa_free_device_info(device_info);
 			printf("control hardware info (%d): %s\n", card, snd_strerror(err));
 			return -1;
@@ -104,7 +140,6 @@ int alsa_load_mixers() {
 		for (elem = snd_mixer_first_elem(dev->mixer_handle); elem; elem = snd_mixer_elem_next(elem)) {
 			if (!snd_mixer_selem_is_active(elem))
 				continue;
-			continue;
 			alsa_alloc_mixer_info(&mixer_info);
 			snd_mixer_selem_get_id(elem, mixer_info->sid);
 			dev->mixers = (alsa_mixer_info**)realloc(dev->mixers,
@@ -118,7 +153,7 @@ int alsa_load_mixers() {
 
 void alsa_alloc_device_info(alsa_device_info **device_info) {
 	*device_info = (alsa_device_info*)malloc(sizeof(alsa_device_info));
-	(*device_info)->handle = NULL;
+	(*device_info)->ctl = NULL;
 	(*device_info)->info = NULL;
 	(*device_info)->hctl = NULL;
 	(*device_info)->mixers = NULL;
@@ -141,21 +176,21 @@ void alsa_free_device_info(alsa_device_info *device_info) {
 		}
 		free(device_info->mixers);
 	}
-	if (device_info->mixer_handle != NULL)
+	if (device_info->mixer_handle != NULL) {
 		snd_mixer_detach_hctl(device_info->mixer_handle, device_info->hctl);
-	if (device_info->hctl != NULL)
-		snd_hctl_close(device_info->hctl);
+		snd_mixer_close(device_info->mixer_handle);
+	}
 	if (device_info->info != NULL)
 		snd_ctl_card_info_free(device_info->info);
-	if (device_info->handle != NULL)
-		snd_ctl_close(device_info->handle);
+	if (device_info->hctl)
+		snd_hctl_close(device_info->hctl);
+	else if (device_info->ctl)
+		snd_ctl_close(device_info->ctl);
 	free(device_info);
-	device_info = NULL;
 }
 
 void alsa_free_mixer_info(alsa_mixer_info *mixer_info) {
 	if (mixer_info->sid != NULL)
 		snd_mixer_selem_id_free(mixer_info->sid);
 	free(mixer_info);
-	mixer_info = NULL;
 }

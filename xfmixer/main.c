@@ -20,11 +20,11 @@ int main(int argc, char **argv) {
 		return 1;		
 	}
 
-	for (i = 0; i < alsa_device_count; i++) {
-		printf("card: %d - %s\n", alsa_device_list[i]->card_num, snd_ctl_card_info_get_id(alsa_device_list[i]->info));
+	for (i = 0; i < alsa_get_card_count(); i++) {
+		printf("card: %d - %s\n", i, alsa_get_card_name(i));
 
-		for (j = 0; j < alsa_device_list[i]->mixer_count; j++) {
-			printf("mixer(%d): %s\n", alsa_device_list[i]->card_num, snd_mixer_selem_id_get_name(alsa_device_list[i]->mixers[j]->sid));
+		for (j = 0; j < alsa_get_mixer_count(i); j++) {
+			printf("mixer(%d): %s\n", i, alsa_get_mixer_name(i, j));
 		}
 	}
 
