@@ -1,8 +1,40 @@
+/*
+ * Copyright (c) 2011 Josh Williams <theprime@codingprime.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
+#include <alsa/asoundlib.h>
+#include <alsa/control.h>
 #include "alsa.h"
+
+typedef struct {
+	snd_mixer_selem_id_t    *sid;
+} alsa_mixer_info;
+
+typedef struct {
+	int                     card_num;
+	snd_ctl_t               *ctl;
+	snd_hctl_t				*hctl;
+	snd_ctl_card_info_t     *info;
+	snd_mixer_t             *mixer_handle;
+	alsa_mixer_info         **mixers;
+	int                     mixer_count;
+} alsa_device_info;
 
 alsa_device_info **alsa_device_list = NULL;
 int              alsa_device_count = 0;
@@ -15,10 +47,9 @@ void alsa_free_device_info(alsa_device_info *device_info);
 void alsa_free_mixer_info(alsa_mixer_info *mixer_info);
 
 int alsa_init() {
-	if (alsa_load_devices() == 0) {
+	if (alsa_load_devices() == 0)
 		return alsa_load_mixers();
-	}
-	return 0;
+	return -1;
 }
 
 void alsa_cleanup() {

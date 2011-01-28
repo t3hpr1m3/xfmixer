@@ -14,14 +14,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef __ALSA_H__
-#define __ALSA_H__
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
-int alsa_init();
-void alsa_cleanup();
-int alsa_get_card_count();
-int alsa_get_mixer_count(int card_idx);
-const char* alsa_get_card_name(int card_idx);
-const char* alsa_get_mixer_name(int card_idx, int mixer_idx);
+#include <libxfce4util/libxfce4util.h>
+#include <libxfcegui4/libxfcegui4.h>
 
-#endif /* !__ALSA_H__ */
+static gboolean xfmixer_window_delete(GtkWidget *widget, GdkEvent *event, gpointer data) {
+	g_print("delete event occurred\n");
+	return FALSE;
+}
+
+GtkWidget* xfmixer_window_new(void) {
+	GtkWidget *window;
+
+	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+
+	g_signal_connect(window, "delete-event", G_CALLBACK(xfmixer_window_delete), NULL);
+	g_signal_connect(G_OBJECT(window), "delete-event", G_CALLBACK(gtk_main_quit), NULL);
+
+	gtk_container_set_border_width(GTK_CONTAINER(window), 10);
+
+	return window;
+}

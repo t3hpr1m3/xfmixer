@@ -14,14 +14,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef __ALSA_H__
-#define __ALSA_H__
+#ifndef __XFMIXER_WINDOW_H__
+#define __XFMIXER_WINDOW_H__
 
-int alsa_init();
-void alsa_cleanup();
-int alsa_get_card_count();
-int alsa_get_mixer_count(int card_idx);
-const char* alsa_get_card_name(int card_idx);
-const char* alsa_get_mixer_name(int card_idx, int mixer_idx);
+#include <gtk/gtk.h>
 
-#endif /* !__ALSA_H__ */
+/*
+typedef struct _XfmixerWindowClass  XfmixerWindowClass;
+typedef struct _XfmixerWindow       XfmixerWindow;
+*/
+
+GtkWidget* xfmixer_window_new(void);
+
+#endif /* !__XFMIXER_WINDOW_H__ */
